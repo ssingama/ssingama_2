@@ -1,0 +1,99 @@
+---
+title: "QMM ASSIGNMENT 2"
+author: "sairithik"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+# problem
+# weigelt corporation has three plants i.e plant 1, plant 2 and plant 3.
+# three plants produce three products in different sizes i.e large, medimum, small and their sizes are 20,15,12 respectively.
+# maximum production of plant 1, plant 2 and plant 3 are  750, 900 and 450 respectively.
+# the maximum maximum storage capacity of plant 1, plant 2 and plant 3 is 13000,12000 and 5000 respectively.
+# the sales of three products i.e large, medium and small are 900,1200 and 750 respectively.
+# the objective is to maximize the profit by producing the product.
+# lets assume product produced in plant in large size be 'm'
+# lets assume product produced in plant in Medium Size be 'n'
+# lets assume product produced in plant inSmall Size be 'p'
+
+# objective Function is Z=420(m1+n1+p1)+360(m1+n2+p3)+300(m1+n2+p3)
+
+# Rearranging the objective function
+#  Z=420m1+360n1+300p1+420m2+360n2+300p2+420m3 +360n3 +300p3
+# Subject to
+# m1 +n1+p1 ≤750
+# m2 +n2+p2 ≤900
+# m3 +n3+p3 ≤450
+# 20m1 +15n1 +12p1 ≤ 13000
+# 20m2 +15n2 +12p2 ≤ 12000
+# 20m3 +15n3 +12p3 ≤ 5000
+
+# m1 + m2+ m3 ≤900
+
+# n1 +n2+n3 ≤1200
+
+# p1 +p2+p3 ≤750
+
+# Non-negativity constraints :
+
+# m1,m2,m3,n1,n2,n3,p1,p2,p3 ≥ 0
+
+# The above LP problem constraints can be writing in this format also
+# m1+n1+p1+0m2+0n2+0p2+0m3+0n3+0p3 ≤750
+# 0m1+0n1+0p1+m2+n2+p2+0m3+0n3+0p3 ≤900
+# 0m1+0n1+0p1+0m2+0n2+0p2+m3+n3+p3 ≤450
+# 20m1+15n1+12p1+0m2+0n2+0p2+0m3+0n3+0p3 ≤13000
+# 0m1+0n1+0p1+20m +15n2+12p2+mA3+0n3+0p3 ≤12000
+# 0m1+0n1+0p1+0m+0n2+0p2+20m3+15n3+12p3 ≤5000
+# m1+0n1+0p1+m2+0n2+0p2+m3+0n3+0p3 ≤900
+# 0m1+n1+0p1+0m2+n2+0p2+m3+n3+0p3 ≤1200
+# 0m1+0n1+ p1+0m2+0n2+p2+0m3+0n3+p3 ≤75
+
+
+
+# installing the required packages
+# install.packages("lpsolve")
+# library
+
+library(lpSolve)
+#The objective function is to maximize Z = 420m1 + 360n1 + 300p1 + 420m2 + 360n2 + 300p2 + 420m3 + 360n3 + 300p3
+Obj_fun<-c(420,360,300,420,360,300,420,360,300)
+#Below constraints are written in the form of matrix :
+
+con_fun<-matrix(c(1,1,1,0,0,0,0,0,0,
+                  0,0,0,1,1,1,0,0,0,
+                  0,0,0,0,0,0,1,1,1,
+                  20,15,12,0,0,0,0,0,0,
+                  0,0,0,20,15,12,0,0,0,
+                  0,0,0,0,0,0,20,15,12,
+                  1,0,0,1,0,0,1,0,0,
+                  0,1,0,0,1,0,0,1,0,
+                  0,0,1,0,0,1,0,0,1),nrow=9,byrow=TRUE)
+#setting direction for inequalities.
+Dir_fun<-c("<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=") 
+#set the right hand side of the coefficients
+rhs_fun<-c(750,
+           900,
+           450,
+           13000,
+           12000,
+           5000,
+           900,
+           1200,
+           750)
+#finding the objective function value
+lp("max",Obj_fun,con_fun,Dir_fun,rhs_fun)
+##Success:theobjectivefunctionis708000
+#Values of each variable
+lp("max",Obj_fun,con_fun,Dir_fun,rhs_fun)$solution
+
+

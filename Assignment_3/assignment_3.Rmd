@@ -1,0 +1,46 @@
+---
+title: "Assignment 3"
+author: "Sairithik Singamalla"
+date: "10-15-2023"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+## Module 6 - The Transportation Model
+
+```{r}
+# Load the lpSolve library
+library(lpSolve)
+
+# Define the transportation cost matrix
+transportation_cost <- matrix(c(22, 14, 30, 16, 20, 24), nrow = 2, byrow = TRUE)
+
+# Define the production capacities for each plant
+production_capacities <- c(100, 120)
+
+# Define the demand for each warehouse
+warehouse_demand <- c(80, 60, 70)
+
+# Solve the transportation problem
+transportation_solution <- lp(direction = "min",
+                              objective.in = c(transportation_cost),
+                              const.mat = rbind(diag(2), matrix(1, nrow = 3, ncol = 2)),
+                              const.dir = c(rep("<=", 2), rep("=", 3)),
+                              const.rhs = c(production_capacities, warehouse_demand))
+
+# Extract the solution
+optimal_transportation_plan <- transportation_solution$solution
+
+# Print the optimal transportation plan
+print(optimal_transportation_plan)
+
+# Print the minimum cost
+min_transportation_cost <- transportation_solution$objval
+print(min_transportation_cost)
+
+
+```
+
+

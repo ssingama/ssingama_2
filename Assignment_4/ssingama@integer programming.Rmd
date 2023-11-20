@@ -1,0 +1,76 @@
+---
+title: "ssingama@interger programming"
+author: "sairithik singamalla"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+---
+title: "INTERGER PROGRAMMING"
+author: "sairithik singamalla"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+# Required package for optimization
+require(lpSolve)
+
+# Define the number of workers needed from Sunday to Saturday
+daily_worker_requirements <- c(18, 27, 22, 26, 25, 21, 19)
+standard_weekly_salary <- 750
+additional_salary_for_weekends <- 25
+day_labels <- c("Sun", "Mon", "Tue", "Wed", "Thurs", "Fri", "Sat")
+
+# Determining salaries for different shift patterns
+# Shifts: Sun-Thu, Mon-Fri, ..., Wed-Sun
+salary_for_shifts <- rep(standard_weekly_salary, 7) + c(2, 1, 0, 0, 0, 0, 1) * additional_salary_for_weekends
+
+# The aim is to minimize the total salary cost
+# Constraint: Meeting the daily workforce requirements
+
+# The number of shift types
+number_of_shifts <- length(salary_for_shifts)
+
+# Creating the objective function for the optimization
+objective_function <- salary_for_shifts
+
+# Formulating the constraints matrix
+# Each row signifies a day and columns signify shifts
+day_shift_matrix <- matrix(c(
+  0,1,1,1,1,1,0,  # Sunday
+  0,0,1,1,1,1,1,  # Monday
+  1,0,0,1,1,1,1,  # Tuesday
+  1,1,0,0,1,1,1,  # Wednesday
+  1,1,1,0,0,1,1,  # Thursday
+  1,1,1,1,0,0,1,  # Friday
+  1,1,1,1,1,0,0   # Saturday
+), nrow = 7, byrow = TRUE)
+
+# Types of constraints: ensuring enough workers each day
+types_of_constraints <- rep(">=", 7)
+
+# Right-hand side values of the constraints
+rhs_values <- daily_worker_requirements
+
+# Executing the integer linear programming model
+optimization_result <- lp("min", objective_function, day_shift_matrix, types_of_constraints, rhs_values, all.int = TRUE)
+
+# Displaying the results
+if(optimization_result$status == 0) {
+  cat("Optimal solution successfully determined.\n")
+  cat("Total Salary Cost: $", sum(optimization_result$solution * salary_for_shifts), "\n")
+  cat("Daily Worker Allocation:\n")
+  
+  # Displaying the number of workers allocated for each day
+  for(i in seq_along(day_labels)) {
+    workers_today <- sum(day_shift_matrix[i, ] * optimization_result$solution)
+    cat(day_labels[i], ": ", workers_today, "\n")
+  }
+} else {
+  cat("Failed to find an optimal solution.")
+}
+
+```
